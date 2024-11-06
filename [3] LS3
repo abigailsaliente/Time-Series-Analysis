@@ -1,0 +1,96 @@
+install.packages(ggplot2)
+library(ggplot2)
+library(stats)
+
+AirPassengers
+str(AirPassengers)
+
+AirPassengers_ts <- ts(AirPassengers, frequency = 4, 
+                       start = 1949)
+AirPassengers_ts
+air_decomp <- decompose(AirPassengers_ts)
+plot(air_decomp)
+
+plot_data <- data.frame(Month = time(AirPassengers_ts),
+                        Trend = air_decomp$trend,
+                        Seasonal = air_decomp$seasonal,
+                        Irregularity = air_decomp$random)
+
+# Trend
+ggplot(plot_data, aes(x= Month, y= Trend)) +
+  geom_line()
+
+# Seasonality
+ggplot(plot_data, aes(x= Month, y= Seasonal)) +
+  geom_line()
+
+# Irregularity
+ggplot(plot_data, aes(x= Month, y= Irregularity)) +
+  geom_line()
+
+
+####### November 6, 2024 #########
+install.packages("trend")
+library(trend)
+
+# Convert AirPassengers dataset to Time series object
+air_passenger_ts <- ts(AirPassengers_ts, frequency = 12, start= 1949)
+
+# Apply Mann Kendall
+result <- mk.test(air_passenger_ts)
+print(result)
+
+# create a time variable
+time <- 1:length(air_passenger_ts)
+
+# Fit a linear regression model
+model <- lm(air_passenger_ts~time)
+summary(model)
+
+
+# F-test for Seasonality using ANOVA in a Linear Regression Model
+# Create a data.frame with time, seasonal factor, and the time series data
+df <- data.frame(
+  time =1:length(air_passenger_ts),
+  month = factor(cycle(air_passenger_ts)),
+  value = as.numeric(air_passenger_ts)
+)
+AirPassengers
+
+# Fit a linear model with "month" as a factor
+model1 <-lm(value~month, data = df)
+summary(model1)
+
+# perform ANOVA
+anova_result <- anova(model1)
+print(anova_result)
+
+# Perform the kruskal wallis on "value" by "month"
+kruskal_test <- kruskal.test(value~month, data=df)
+print(kruskal_test)
+
+# REGRESSION-BASED FOR SEASONALITY
+# Create dummy variables for each month
+df$month_dummy <- model.matrix(~ month - 1, data= df)
+View(df)
+
+# fit a linear regression model including month dummies
+seasonal_model <- lm(value ~month, data= df)
+
+# check the summary to see the significance of month dummies
+summary(seasonal_model)
+
+
+
+
+##### NEXT WEEK TOPIC #####
+install.packages("FinTS")
+library(FinTS)
+
+# Perform Engle's ARCH test
+# By default equal to 5
+arch_test_result <- ArchTest(air_passenger_ts, lag = 5) # adjust lags as needed
+print(arch_test_result)
+
+
+airmiles
