@@ -1,0 +1,28 @@
+library(readxl)
+
+# load the dataset
+data_timeseries
+View(data_timeseries)
+
+
+plot(data_timeseries$`Time Index`, data_timeseries$`Receipts, yt`)
+attach(data_timeseries)
+timeseriesTrend <- lm(`Receipts, yt`~`Time Index`, 
+                      data = data_timeseries)
+timeseriesTrend
+new <- data.frame(`Time Index`= 7)
+predict(timeseriesTrend, new)
+
+attach(data_timeseries)
+timeseriesExpo <- lm(`ln (yt)`~`Time Index`,
+                     data_timeseries)
+timeseriesExpo
+new1 <- data.frame(`Time Index`= 6)
+predict(timeseriesExpo, new1)
+
+attach(data_timeseries)
+timeseriesQuad <- lm(`Production, yt`~ `Time Index, t`+ 
+                       I(`Time Index, t`^2), data_timeseries)
+timeseriesQuad                       
+new2 <- data.frame(`Time Index` = 3)
+predict(timeseriesQuad, new2)                   
