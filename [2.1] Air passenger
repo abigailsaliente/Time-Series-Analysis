@@ -1,0 +1,29 @@
+install.packages(ggplot2)
+library(ggplot2)
+library(stats)
+
+AirPassengers
+str(AirPassengers)
+
+AirPassengers_ts <- ts(AirPassengers, frequency = 4, 
+                       start = 1949)
+AirPassengers_ts
+air_decomp <- decompose(AirPassengers_ts)
+plot(air_decomp)
+
+plot_data <- data.frame(Month = time(AirPassengers_ts),
+                        Trend = air_decomp$trend,
+                        Seasonal = air_decomp$seasonal,
+                        Irregularity = air_decomp$random)
+
+# Trend
+ggplot(plot_data, aes(x= Month, y= Trend)) +
+  geom_line()
+
+# Seasonality
+ggplot(plot_data, aes(x= Month, y= Seasonal)) +
+  geom_line()
+
+# Irregularity
+ggplot(plot_data, aes(x= Month, y= Irregularity)) +
+  geom_line()
